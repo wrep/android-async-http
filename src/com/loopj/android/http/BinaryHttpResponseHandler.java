@@ -142,11 +142,23 @@ public class BinaryHttpResponseHandler extends AsyncHttpResponseHandler {
 		switch(msg.what) {
 		case SUCCESS_MESSAGE:
 			response = (Object[])msg.obj;
-			handleSuccessMessage(((Integer) response[0]).intValue() , (byte[]) response[1]);
+			if (response[1] instanceof byte[]) {
+				handleSuccessMessage(((Integer) response[0]).intValue() , (byte[]) response[1]);
+			} else if (response[1] instanceof String) {
+				handleFailureMessage((Throwable)response[0], (String)response[1]);
+			} else {
+				handleFailureMessage((Throwable)response[0], "");
+			}
 			break;
 		case FAILURE_MESSAGE:
 			response = (Object[])msg.obj;
-			handleFailureMessage((Throwable)response[0], (byte[])response[1]);
+			if (response[1] instanceof byte[]) {
+				handleFailureMessage((Throwable)response[0], (byte[])response[1]);
+			} else if (response[1] instanceof String) {
+				handleFailureMessage((Throwable)response[0], (String)response[1]);
+			} else {
+				handleFailureMessage((Throwable)response[0], "");
+			}
 			break;
 		default:
 			super.handleMessage(msg);
